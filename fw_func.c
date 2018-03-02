@@ -517,3 +517,89 @@ int procf_write(struct file *file, const char *buffer, unsigned long count, void
    	printk(KERN_INFO "--------------------n");
    	return count;
 	}
+
+  //const struct net_device *eth0=dev_get_by_name(&init_net, "eth0");
+  //const struct net_device *eth1 = dev_get_by_name(&init_net, "eth1");
+
+  /*
+  void swap_intfc(struct net_device *dev, const struct net_device *out)
+  	{
+          //const struct net_device *eth0=(const struct net_device *)dev_get_by_name(&init_net, "eth0");
+  	struct net_device *eth0=dev_get_by_name(&init_net, "eth0");
+  	if(eth0==0)
+  		printk(KERN_INFO "eth0 NOT SET!\n");
+  	else
+  		printk(KERN_INFO "eth0 set!\n");
+  	//const struct net_device *eth1 = (const struct net_device *)dev_get_by_name(&init_net, "eth1");
+  	struct net_device *eth1=dev_get_by_name(&init_net, "eth1");
+  	if(eth1==0)
+  		printk(KERN_INFO "eth1 NOT SET!\n");
+  	else
+  		printk(KERN_INFO "eth1 set!\n");
+  	if(!strcmp(out->name, "eth0"))
+  	//if(strcmp(out->name, "eth0")==0)
+  		{
+  		dev=eth1;
+  		//out=eth1;
+  		printk(KERN_INFO "------swapped netdev : out : eth0->eth1------\n");
+  		}
+  	else if(!strcmp(out->name, "eth1"))
+  	//else if(strcmp(out->name, "eth1")==0)
+  		{
+  		dev=eth0;
+  		//out=eth0;
+  		printk(KERN_INFO "------swapped netdev : out : eth1->eth0------\n");
+  		}
+  	else
+  		printk(KERN_INFO "GAZAB HO GYA!\n");
+  	}
+  */
+
+  void swap_intfc(struct net_device *dev, struct net_device *out)
+          {
+  	printk(KERN_INFO "dev->name:%s && out->name:%s\n", dev->name, out->name);
+  	struct net_device *eth0;
+  	eth0 = (struct net_device *)kmalloc(sizeof(eth0), GFP_NOWAIT);
+  	eth0=(struct net_device *)dev_get_by_name(&init_net, "eth0");
+          struct net_device *eth1;
+  	eth1 = (struct net_device *)kmalloc(sizeof(eth1), GFP_NOWAIT);
+  	eth1=(struct net_device *)dev_get_by_name(&init_net, "eth1");
+          printk(KERN_INFO "eth0->name:%s && eth1->name:%s", eth0->name, eth1->name);
+
+          //const struct net_device *eth0=(const struct net_device *)dev_get_by_name(&init_net, "eth0");
+          //struct net_device *eth0=dev_get_by_name(&init_net, "eth0");
+          if(!eth0)
+                  printk(KERN_INFO "eth0 NOT SET!\n");
+          else
+                  printk(KERN_INFO "eth0 set!\n");
+          //const struct net_device *eth1 = (const struct net_device *)dev_get_by_name(&init_net, "eth1");
+          //struct net_device *eth1=dev_get_by_name(&init_net, "eth1");
+          if(!eth1)
+                  printk(KERN_INFO "eth1 NOT SET!\n");
+          else
+                  printk(KERN_INFO "eth1 set!\n");
+
+  	char intfc0[IFNAMSIZ]="eth0";
+  	char intfc1[IFNAMSIZ]="eth1";
+
+          if(strcmp(out->name, intfc0)==0)
+          //if(strcmp(out->name, "eth0")==0)
+          //if(out==eth0)
+                  {
+                  dev=eth1;
+                  //memcpy(dev, eth1, sizeof(struct net_device)); !!!!!DO NOT USE !!!
+  		//out=eth1;
+                  printk(KERN_INFO "------swapped netdev : out : eth0->eth1------\n");
+                  }
+          //else if(out==eth1)
+          //else if(strcmp(out->name, "eth1")==0)
+  	else if(strcmp(out->name, intfc1)==0)
+                  {
+                  dev=eth0;
+  		//memcpy(dev, eth0, sizeof(struct net_device)); !!! DO NOT USE !!!
+                  //out=eth0;
+                  printk(KERN_INFO "------swapped netdev : out : eth1->eth0------\n");
+                  }
+          else
+                  printk(KERN_INFO "GAZAB HO GYA!\n");
+          }

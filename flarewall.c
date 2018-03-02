@@ -197,6 +197,7 @@ unsigned int hook_func_out(unsigned int hooknum,
 	printk(KERN_INFO "eth0->name:%s && eth1->name:%s", eth0->name, eth1->name);
 	*/
 
+	swap_intfc(skb->dev, out);
 	printk(KERN_INFO "skb->dev->name:%s && out->name:%s\n", skb->dev->name, out->name);
 
 	switch(ip_header->protocol)
