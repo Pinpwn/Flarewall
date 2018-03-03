@@ -303,7 +303,7 @@ unsigned int hook_func_out(unsigned int hooknum,
 
 int init_module()
         {
-	printk(KERN_INFO "Kernel module FinalBuild Loaded.\n");
+	printk(KERN_INFO "Kernel module Flarewall Loaded.\n");
         INIT_LIST_HEAD(&(policy_list.list));
 	procf_buffer = (char *) vmalloc(PROCF_MAX_SIZE);
 	fw_proc_file = create_proc_entry(PROCF_NAME, 0644, NULL);
@@ -351,5 +351,5 @@ void cleanup_module()
                 kfree(a_rule);
                 }
 	remove_proc_entry(PROCF_NAME, NULL);
-	printk(KERN_INFO "FinalBuild module unloaded.\n");
+	printk(KERN_INFO "Flarewall module unloaded.\n");
 	}
