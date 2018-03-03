@@ -70,7 +70,7 @@ void send_rule_to_proc()
 	{
     	//printf("send_rule_to_procn");
     	char a_rule[200];
-    	sprintf(a_rule, "%u %s %s %s %s %s %s %u %un", fw_rule.in_out+1, print_value(fw_rule.src_ip),
+    	sprintf(a_rule, "%u %s %s %s %s %s %s %u %u\n", fw_rule.in_out+1, print_value(fw_rule.src_ip),
 		print_value(fw_rule.src_netmask), print_value(fw_rule.src_port),
 		print_value(fw_rule.dest_ip), print_value(fw_rule.dest_netmask),
 		print_value(fw_rule.dest_port), get_proto(fw_rule.proto),
