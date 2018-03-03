@@ -21,7 +21,7 @@ MODULE_AUTHOR("Kushagra Choudhary/Pinpwn");
 /****************************************************/
 
 #define PROCF_MAX_SIZE 1024
-#define PROCF_NAME "flarewall.txt"
+#define PROCF_NAME "flarewall"
 
 struct fw_rule_desc                     //struct for fw policy
         {

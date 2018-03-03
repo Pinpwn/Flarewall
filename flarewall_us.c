@@ -24,10 +24,10 @@ static struct fw_delete_struct
 void send_to_proc(char *str)
 	{
     	FILE *pf;
-    	pf = fopen("/proc/nf_ids", "w");
+    	pf = fopen("/proc/flarewall", "w");
     	if (pf == NULL)
 		{
-        	printf("Cannot open /proc/nf_ids for writing\n");
+        	printf("Cannot open /proc/flarewall for writing\n");
         	return;
     		}
 	else
@@ -95,10 +95,10 @@ void print_rule()
     	char ch;
     	int i = 0;
     	printf("in/out    src ip    src mask    src port    dest ip    dest mask     dest port    proto    action\n");
-   	pf = fopen("/proc/nf_ids", "r");
+   	pf = fopen("/proc/flarewall", "r");
     	if (pf == NULL)
 		{
-        	printf("Cannot open /proc/nf_ids for reading\n");
+        	printf("Cannot open /proc/flarewall for reading\n");
         	return;
     		}
 	else
