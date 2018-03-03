@@ -8,9 +8,9 @@ static struct fw_rule_struct
     	char *src_ip;
     	char *src_netmask;
     	char *src_port;            //default to -1
-   	char *dest_ip;
-    	char *dest_netmask;
-    	char *dest_port;
+   	char *dst_ip;
+    	char *dst_netmask;
+    	char *dst_port;
     	char *proto;
     	char *action;
 	} fw_rule;
@@ -72,8 +72,8 @@ void send_rule_to_proc()
     	char a_rule[200];
     	sprintf(a_rule, "%u %s %s %s %s %s %s %u %un", fw_rule.in_out+1, print_value(fw_rule.src_ip),
 		print_value(fw_rule.src_netmask), print_value(fw_rule.src_port),
-		print_value(fw_rule.dest_ip), print_value(fw_rule.dest_netmask),
-		print_value(fw_rule.dest_port), get_proto(fw_rule.proto),
+		print_value(fw_rule.dst_ip), print_value(fw_rule.dst_netmask),
+		print_value(fw_rule.dst_port), get_proto(fw_rule.proto),
 		get_action(fw_rule.action));
 
     	//printf("%sn", a_rule);
@@ -94,7 +94,7 @@ void print_rule()
     	char token[20];
     	char ch;
     	int i = 0;
-    	printf("in/out    src ip    src mask    src port    dest ip    dest mask     dest port    proto    action\n");
+    	printf("in/out    src ip    src mask    src port    dst ip    dst mask     dst port    proto    action\n");
    	pf = fopen("/proc/flarewall", "r");
     	if (pf == NULL)
 		{
@@ -160,7 +160,7 @@ void print_rule()
         	token[i] = '\0';
         	printf("%s     ", token);
         	if (ch==EOF) break;
-        	//dest ip
+        	//dst ip
         	i = 0;
         	while (((ch=fgetc(pf))!=EOF) && (ch!=' '))
 			{
@@ -176,7 +176,7 @@ void print_rule()
             		printf(" %s ", token);
         		}
         	if (ch==EOF) break;
-        	//dest mask
+        	//dst mask
         	i = 0;
         	while (((ch=fgetc(pf))!=EOF) && (ch!=' '))
 			{
@@ -192,7 +192,7 @@ void print_rule()
             		printf(" %s ", token);
         		}
         	if (ch==EOF) break;
-        	//dest port
+        	//dst port
         	i = 0;
         	while (((ch=fgetc(pf))!=EOF) && (ch!=' '))
 			{
@@ -230,8 +230,8 @@ int main(int argc, char **argv)
 	{
     	int c; int action = 1;    //1: new rule; 2: print; 3: delete
     	fw_rule.in_out = -1; fw_rule.src_ip = NULL; fw_rule.src_netmask = NULL;
-    	fw_rule.src_port = NULL; fw_rule.dest_ip = NULL; fw_rule.dest_netmask = NULL;
-   	fw_rule.dest_port = NULL; fw_rule.proto = NULL; fw_rule.action = NULL;
+    	fw_rule.src_port = NULL; fw_rule.dst_ip = NULL; fw_rule.dst_netmask = NULL;
+   	fw_rule.dst_port = NULL; fw_rule.proto = NULL; fw_rule.action = NULL;
     	while (1)
     	{
         static struct option long_options[] =
@@ -246,9 +246,9 @@ int main(int argc, char **argv)
             {"srcip", required_argument, 0, 's'},
             {"srcnetmask", required_argument, 0, 'm'},
             {"srcport", required_argument, 0, 'p'},
-            {"destip", required_argument, 0, 't'},
-            {"destnetmask", required_argument, 0, 'n'},
-            {"destport", required_argument, 0, 'q'},
+            {"dstip", required_argument, 0, 't'},
+            {"dstnetmask", required_argument, 0, 'n'},
+            {"dstport", required_argument, 0, 'q'},
             {"proto", required_argument, 0, 'c'},
             {"action", required_argument, 0, 'a'},
             {0, 0, 0, 0}
@@ -282,13 +282,13 @@ int main(int argc, char **argv)
               fw_rule.src_port = optarg;    //srcport:
               break;
             case 't':
-              fw_rule.dest_ip = optarg;     //destip:
+              fw_rule.dst_ip = optarg;     //dstip:
               break;
             case 'n':
-              fw_rule.dest_netmask = optarg;    //destnetmask
+              fw_rule.dst_netmask = optarg;    //dstnetmask
               break;
             case 'q':
-              fw_rule.dest_port = optarg;    //destport
+              fw_rule.dst_port = optarg;    //dstport
               break;
             case 'c':
               fw_rule.proto = optarg; //proto

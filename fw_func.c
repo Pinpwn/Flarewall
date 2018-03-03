@@ -29,9 +29,9 @@ struct fw_rule_desc                     //struct for fw policy
         char      *src_ip;
         char  		*src_netmask;
         char 			*src_port;
-        char 			*dest_ip;
-        char 			*dest_netmask;
-        char 			*dest_port;
+        char 			*dst_ip;
+        char 			*dst_netmask;
+        char 			*dst_port;
         unsigned char 		proto;
         unsigned char 		action;
         };
@@ -42,9 +42,9 @@ struct fw_rule
         unsigned int 		src_ip;
         unsigned int 		src_netmask;
         unsigned int 		src_port;          //0 to 2^32
-        unsigned int 		dest_ip;
-        unsigned int 		dest_netmask;
-        unsigned int 		dest_port;
+        unsigned int 		dst_ip;
+        unsigned int 		dst_netmask;
+        unsigned int 		dst_port;
         unsigned char 		proto;            //0: all, 1: tcp, 2: udp
         unsigned char 		action;           //0: for block, 1: for unblock
         struct list_head 	list;
@@ -56,9 +56,9 @@ void init_fw_rule_desc(struct fw_rule_desc* a_rule_desc)
     	a_rule_desc->src_ip       = (char *)kmalloc(16, GFP_KERNEL);
     	a_rule_desc->src_netmask  = (char *)kmalloc(16, GFP_KERNEL);
     	a_rule_desc->src_port     = (char *)kmalloc(16, GFP_KERNEL);
-    	a_rule_desc->dest_ip      = (char *)kmalloc(16, GFP_KERNEL);
-    	a_rule_desc->dest_netmask = (char *)kmalloc(16, GFP_KERNEL);
-    	a_rule_desc->dest_port    = (char *)kmalloc(16, GFP_KERNEL);
+    	a_rule_desc->dst_ip      = (char *)kmalloc(16, GFP_KERNEL);
+    	a_rule_desc->dst_netmask = (char *)kmalloc(16, GFP_KERNEL);
+    	a_rule_desc->dst_port    = (char *)kmalloc(16, GFP_KERNEL);
     	a_rule_desc->proto        = 0;
    	a_rule_desc->action 	  = 0;
 	}
@@ -192,21 +192,21 @@ void add_fw_rule(struct fw_rule_desc* a_rule_desc)
         	a_rule->src_port = port_str_to_int(a_rule_desc->src_port);
     	else
        		a_rule->src_port = NULL;
-    	if (strcmp(a_rule_desc->dest_ip, "-") != 0)
-        	a_rule->dest_ip = ip_str_to_hl(a_rule_desc->dest_ip);
+    	if (strcmp(a_rule_desc->dst_ip, "-") != 0)
+        	a_rule->dst_ip = ip_str_to_hl(a_rule_desc->dst_ip);
     	else
-        	a_rule->dest_ip = NULL;
-    	if (strcmp(a_rule_desc->dest_netmask, "-") != 0)
-        	a_rule->dest_netmask = ip_str_to_hl(a_rule_desc->dest_netmask);
+        	a_rule->dst_ip = NULL;
+    	if (strcmp(a_rule_desc->dst_netmask, "-") != 0)
+        	a_rule->dst_netmask = ip_str_to_hl(a_rule_desc->dst_netmask);
     	else
-        	a_rule->dest_netmask = NULL;
-    	if (strcmp(a_rule_desc->dest_port, "-") != 0)
-        	a_rule->dest_port = port_str_to_int(a_rule_desc->dest_port);
+        	a_rule->dst_netmask = NULL;
+    	if (strcmp(a_rule_desc->dst_port, "-") != 0)
+        	a_rule->dst_port = port_str_to_int(a_rule_desc->dst_port);
     	else
-        	a_rule->dest_port = NULL;
+        	a_rule->dst_port = NULL;
     	a_rule->proto = a_rule_desc->proto;
     	a_rule->action = a_rule_desc->action;
-    	printk(KERN_INFO "add_fw_rule: in_out=%u, src_ip=%u, src_netmask=%u, src_port=%u, dest_ip=%u, dest_netmask=%u, dest_port=%u, proto=%u, action=%un", a_rule->in_out, a_rule->src_ip, a_rule->src_netmask, a_rule->src_port, a_rule->dest_ip, a_rule->dest_netmask, a_rule->dest_port, a_rule->proto, a_rule->action);
+    	printk(KERN_INFO "add_fw_rule: in_out=%u, src_ip=%u, src_netmask=%u, src_port=%u, dst_ip=%u, dst_netmask=%u, dst_port=%u, proto=%u, action=%un", a_rule->in_out, a_rule->src_ip, a_rule->src_netmask, a_rule->src_port, a_rule->dst_ip, a_rule->dst_netmask, a_rule->dst_port, a_rule->proto, a_rule->action);
     	INIT_LIST_HEAD(&(a_rule->list));
     	list_add_tail(&(a_rule->list), &(policy_list.list));
 	}
@@ -305,41 +305,41 @@ int procf_read(char *buffer, char **buffer_location,
             	procf_buffer_pos += strlen(token);
             	memcpy(procf_buffer + procf_buffer_pos, " ", 1);
             	procf_buffer_pos++;
-            	//dest ip
-            	if (a_rule->dest_ip==NULL)
+            	//dst ip
+            	if (a_rule->dst_ip==NULL)
 			{
             	    	strcpy(token, "-");
             		}
 		else
 			{
-                	ip_hl_to_str(a_rule->dest_ip, token);
+                	ip_hl_to_str(a_rule->dst_ip, token);
 	            	}
             	printk(KERN_INFO "token: %sn", token);
             	memcpy(procf_buffer + procf_buffer_pos, token, strlen(token));
             	procf_buffer_pos += strlen(token);
             	memcpy(procf_buffer + procf_buffer_pos, " ", 1);
             	procf_buffer_pos++;
-            	//dest netmask
-            	if (a_rule->dest_netmask==NULL) {
+            	//dst netmask
+            	if (a_rule->dst_netmask==NULL) {
                 	strcpy(token, "-");
             		}
 		else
 			{
-                	ip_hl_to_str(a_rule->dest_netmask, token);
+                	ip_hl_to_str(a_rule->dst_netmask, token);
 	         	}
 		printk(KERN_INFO "token: %sn", token);
                 memcpy(procf_buffer + procf_buffer_pos, token, strlen(token));
                 procf_buffer_pos += strlen(token);
                 memcpy(procf_buffer + procf_buffer_pos, " ", 1);
                 procf_buffer_pos++;
-               //dest port
- 	        if (a_rule->dest_port==0)
+               //dst port
+ 	        if (a_rule->dst_port==0)
 			{
         	        strcpy(token, "-");
         	    	}
 		else
 			{
-                	port_int_to_str(a_rule->dest_port, token);
+                	port_int_to_str(a_rule->dst_port, token);
             		}
             	printk(KERN_INFO "token: %sn", token);
             	memcpy(procf_buffer + procf_buffer_pos, token, strlen(token));
@@ -463,33 +463,33 @@ int procf_write(struct file *file, const char *buffer, unsigned long count, void
    	++i;
    	rule_desc->src_port[j] = '\0';
    	printk(KERN_INFO "src_port: %sn", rule_desc->src_port);
-   	/***dest ip***/
+   	/***dst ip***/
    	j = 0;
   	while (procf_buffer[i]!=' ')
 		{
-       		rule_desc->dest_ip[j++] = procf_buffer[i++];
+       		rule_desc->dst_ip[j++] = procf_buffer[i++];
    		}
    	++i;
-   	rule_desc->dest_ip[j] = '\0';
-   	printk(KERN_INFO "dest ip: %sn", rule_desc->dest_ip);
-   	/***dest netmask***/
+   	rule_desc->dst_ip[j] = '\0';
+   	printk(KERN_INFO "dst ip: %sn", rule_desc->dst_ip);
+   	/***dst netmask***/
    	j = 0;
    	while (procf_buffer[i]!=' ')
 		{
-   	    	rule_desc->dest_netmask[j++] = procf_buffer[i++];
+   	    	rule_desc->dst_netmask[j++] = procf_buffer[i++];
    		}
    	++i;
-   	rule_desc->dest_netmask[j] = '\0';
-   	printk(KERN_INFO "dest netmask%sn", rule_desc->dest_netmask);
-   	/***dest port***/
+   	rule_desc->dst_netmask[j] = '\0';
+   	printk(KERN_INFO "dst netmask%sn", rule_desc->dst_netmask);
+   	/***dst port***/
    	j = 0;
    	while (procf_buffer[i]!=' ')
 		{
-       		rule_desc->dest_port[j++] = procf_buffer[i++];
+       		rule_desc->dst_port[j++] = procf_buffer[i++];
    		}
    	++i;
-   	rule_desc->dest_port[j] = '\0';
-   	printk(KERN_INFO "dest port: %sn", rule_desc->dest_port);
+   	rule_desc->dst_port[j] = '\0';
+   	printk(KERN_INFO "dst port: %sn", rule_desc->dst_port);
    	/***proto***/
    	j = 0;
    	if (procf_buffer[i]!=' ')

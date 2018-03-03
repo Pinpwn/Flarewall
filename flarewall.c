@@ -51,9 +51,9 @@ unsigned int hook_func_in(unsigned int hooknum,
         tcp_header = (struct tcphdr *)skb_transport_header(skb);
         udp_header = (struct udphdr *)skb_transport_header(skb);
         unsigned int src_ip = (unsigned int)ip_header->saddr;
-        unsigned int dest_ip = (unsigned int)ip_header->daddr;
+        unsigned int dst_ip = (unsigned int)ip_header->daddr;
         unsigned int src_port = 0;
-        unsigned int dest_port = 0;
+        unsigned int dst_port = 0;
         struct list_head *p;
         struct fw_rule *a_rule;
         int i=0;
@@ -66,19 +66,19 @@ unsigned int hook_func_in(unsigned int hooknum,
 			case 6:
         prot =	"TCP";
 				src_port = (unsigned int)ntohs(tcp_header->source);
-				dest_port = (unsigned int)ntohs(tcp_header->dest);
+				dst_port = (unsigned int)ntohs(tcp_header->dst);
 				break;
 			case 17:
         prot =	"UDP";
 				src_port = (unsigned int)ntohs(udp_header->source);
-        dest_port = (unsigned int)ntohs(udp_header->dest);
+        dst_port = (unsigned int)ntohs(udp_header->dst);
 				break;
 			default:
 				prot = "OTHER";
 			}
 
         printk(KERN_INFO "IN: %s packet from %pI4 to %pI4. Sport: %d Dport: %d",
-                prot, &src_ip, &dest_ip, src_port, dest_port);
+                prot, &src_ip, &dst_ip, src_port, dst_port);
 
 	list_for_each(p, &policy_list.list)
                 {
@@ -114,15 +114,15 @@ unsigned int hook_func_in(unsigned int hooknum,
                                 	continue;
                                 	}
                         	}
-                	if(a_rule->dest_ip == 0)
+                	if(a_rule->dst_ip == 0)
                         	{
-                        	printk(KERN_INFO "NO dest_ip specified");
+                        	printk(KERN_INFO "NO dst_ip specified");
                         	}
                 	else
                     		{
-                        	if(!check_ip(dest_ip, a_rule->dest_ip, a_rule->dest_netmask))
+                        	if(!check_ip(dst_ip, a_rule->dst_ip, a_rule->dst_netmask))
                                 	{
-                                	printk(KERN_INFO "Rule %d: dest_ip MISMATCH\n", i);
+                                	printk(KERN_INFO "Rule %d: dst_ip MISMATCH\n", i);
                                 	continue;
                                 	}
                         	}
@@ -135,13 +135,13 @@ unsigned int hook_func_in(unsigned int hooknum,
                 	        printk(KERN_INFO "Rule %d: src_port MISMATCH\n", i);
                 	        continue;
                         	}
-                	if(a_rule->dest_port == 0)
+                	if(a_rule->dst_port == 0)
                         	{
-                        	printk(KERN_INFO "NO dest_port specified");
+                        	printk(KERN_INFO "NO dst_port specified");
                         	}
-                	else if(dest_port!=a_rule->dest_port)
+                	else if(dst_port!=a_rule->dst_port)
                         	{
-                        	printk(KERN_INFO "Rule %d: dest_port MISMATCH\n", i);
+                        	printk(KERN_INFO "Rule %d: dst_port MISMATCH\n", i);
                         	continue;
                         	}
 
@@ -177,12 +177,12 @@ unsigned int hook_func_out(unsigned int hooknum,
         tcp_header = (struct tcphdr *)skb_transport_header(skb);
         udp_header = (struct udphdr *)skb_transport_header(skb);
         unsigned int src_ip = (unsigned int)ip_header->saddr;
-        unsigned int dest_ip = (unsigned int)ip_header->daddr;
+        unsigned int dst_ip = (unsigned int)ip_header->daddr;
         unsigned int src_port = 0;
-        unsigned int dest_port = 0;
+        unsigned int dst_port = 0;
         struct list_head *p;
         struct fw_rule *a_rule;
-	//char src_ip_str[16], dest_ip_str[16];    //////////////////////////////////////////
+	//char src_ip_str[16], dst_ip_str[16];    //////////////////////////////////////////
         int i = 0;
         unsigned char *prot;
 
@@ -208,12 +208,12 @@ unsigned int hook_func_out(unsigned int hooknum,
                         case 6:
                                 prot =  "TCP";
                                 src_port = (unsigned int)ntohs(tcp_header->source);
-                                dest_port = (unsigned int)ntohs(tcp_header->dest);
+                                dst_port = (unsigned int)ntohs(tcp_header->dst);
                                 break;
                         case 17:
                                 prot =  "UDP";
                                 src_port = (unsigned int)ntohs(udp_header->source);
-                                dest_port = (unsigned int)ntohs(udp_header->dest);
+                                dst_port = (unsigned int)ntohs(udp_header->dst);
                                 break;
                         default:
                                 prot = "OTHER";
@@ -252,15 +252,15 @@ unsigned int hook_func_out(unsigned int hooknum,
                         	        continue;
                         	        }
                         	}
-               		if (a_rule->dest_ip == 0)
+               		if (a_rule->dst_ip == 0)
                         	{
-                        	printk(KERN_INFO "NO dest_ip specified");
+                        	printk(KERN_INFO "NO dst_ip specified");
                         	}
                 	else
                     		{
-                        	if(!check_ip(dest_ip, a_rule->dest_ip, a_rule->dest_netmask))
+                        	if(!check_ip(dst_ip, a_rule->dst_ip, a_rule->dst_netmask))
                         	        {
-                        	        printk(KERN_INFO "Rule %d: dest_ip MISMATCH\n", i);
+                        	        printk(KERN_INFO "Rule %d: dst_ip MISMATCH\n", i);
                         	        continue;
                                 	}
                         	}
@@ -273,13 +273,13 @@ unsigned int hook_func_out(unsigned int hooknum,
                        		printk(KERN_INFO "Rule %d: src_port MISMATCH\n", i);
                         	continue;
                         	}
-                	if(a_rule->dest_port == 0)
+                	if(a_rule->dst_port == 0)
                         	{
-                        	printk(KERN_INFO "NO dest_port specified");
+                        	printk(KERN_INFO "NO dst_port specified");
                         	}
-                	else if(dest_port!=a_rule->dest_port)
+                	else if(dst_port!=a_rule->dst_port)
                 	        {
-                        	printk(KERN_INFO "Rule %d: dest_port MISMATCH\n", i);
+                        	printk(KERN_INFO "Rule %d: dst_port MISMATCH\n", i);
                         	continue;
                         	}
 			if (a_rule->action==0)  		                        //if match found
