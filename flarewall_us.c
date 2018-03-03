@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <getopt.h>
 #define print_value(x) (x==NULL?"-" : x)
-static struct fw_rule_struct 
+static struct fw_rule_struct
 	{
     	int in_out;
     	char *src_ip;
     	char *src_netmask;
-    	char *src_port;            //default to -1 
+    	char *src_port;            //default to -1
    	char *dest_ip;
     	char *dest_netmask;
     	char *dest_port;
@@ -29,7 +29,7 @@ void send_to_proc(char *str)
 		{
         	printf("Cannot open /proc/nf_ids for writtingn");
         	return;
-    		} 
+    		}
 	else
 		{
         	fprintf(pf, "%s", str);
@@ -70,10 +70,10 @@ void send_rule_to_proc()
 	{
     	//printf("send_rule_to_procn");
     	char a_rule[200];
-    	sprintf(a_rule, "%u %s %s %s %s %s %s %u %un", fw_rule.in_out+1, print_value(fw_rule.src_ip), 
-		print_value(fw_rule.src_netmask), print_value(fw_rule.src_port), 
-		print_value(fw_rule.dest_ip), print_value(fw_rule.dest_netmask), 
-		print_value(fw_rule.dest_port), get_proto(fw_rule.proto), 
+    	sprintf(a_rule, "%u %s %s %s %s %s %s %u %un", fw_rule.in_out+1, print_value(fw_rule.src_ip),
+		print_value(fw_rule.src_netmask), print_value(fw_rule.src_port),
+		print_value(fw_rule.dest_ip), print_value(fw_rule.dest_netmask),
+		print_value(fw_rule.dest_port), get_proto(fw_rule.proto),
 		get_action(fw_rule.action));
 
     	//printf("%sn", a_rule);
@@ -94,8 +94,7 @@ void print_rule()
     	char token[20];
     	char ch;
     	int i = 0;
-    	printf("in/out    src ip    src mask    src port    dest ip    dest mask     
-		dest port    proto    action\n");
+    	printf("in/out    src ip    src mask    src port    dest ip    dest mask     dest port    proto    action\n");
    	pf = fopen("/proc/nf_ids", "r");
     	if (pf == NULL)
 		{
@@ -151,7 +150,7 @@ void print_rule()
             		printf(" %s ", token);
         		}
         	if (ch==EOF) break;
-        	//src port        
+        	//src port
         	i = 0;
         	token[i++] = ' ';
         	while (((ch=fgetc(pf))!=EOF) && (ch!=' '))
@@ -217,7 +216,7 @@ void print_rule()
 			{
         		token[i++] = ch;
         		}
-        	token[i] = '\0';      
+        	token[i] = '\0';
         	printf(" %sn", token);
         	if (ch==EOF) break;
       		}
@@ -230,12 +229,12 @@ void print_rule()
 int main(int argc, char **argv)
 	{
     	int c; int action = 1;    //1: new rule; 2: print; 3: delete
-    	fw_rule.in_out = -1; fw_rule.src_ip = NULL; fw_rule.src_netmask = NULL; 
-    	fw_rule.src_port = NULL; fw_rule.dest_ip = NULL; fw_rule.dest_netmask = NULL; 
+    	fw_rule.in_out = -1; fw_rule.src_ip = NULL; fw_rule.src_netmask = NULL;
+    	fw_rule.src_port = NULL; fw_rule.dest_ip = NULL; fw_rule.dest_netmask = NULL;
    	fw_rule.dest_port = NULL; fw_rule.proto = NULL; fw_rule.action = NULL;
-    	while (1) 
+    	while (1)
     	{
-        static struct option long_options[] = 
+        static struct option long_options[] =
         {
         /*set a flag*/
             {"in", no_argument, &fw_rule.in_out, 0},
@@ -275,7 +274,7 @@ int main(int argc, char **argv)
               break;
             case 's':
               fw_rule.src_ip = optarg;  //src ip
-              break; 
+              break;
             case 'm':
               fw_rule.src_netmask = optarg; //srcnetmask:
               break;
