@@ -27,7 +27,7 @@ void send_to_proc(char *str)
     	pf = fopen("/proc/nf_ids", "w");
     	if (pf == NULL)
 		{
-        	printf("Cannot open /proc/nf_ids for writtingn");
+        	printf("Cannot open /proc/nf_ids for writing\n");
         	return;
     		}
 	else
