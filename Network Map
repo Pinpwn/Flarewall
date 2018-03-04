@@ -1,0 +1,47 @@
+ _____________
+|             |------| Ubuntu |
+|             |     192.168.0.11
+| 192.168.0.1 |
+|_____________|------------------| CentOS |----------------|
+                          eth0                eth1         |
+                      192.168.0.120        192.168.2.1     |
+                                                    _______|_______
+                                                   |               |
+                                                   |     WinXP     |
+                                                   |_______________|
+                                                      192.168.2.3
+
+Network configuration ->
+Ubuntu :
+        network 192.168.0.0
+        mask    255.255.255.0
+        ip      192.168.0.11
+        gw      192.168.0.1
+
+CentOS :
+        eth0 :
+              network 192.168.0.0
+              mask    255.255.255.0
+              ip      192.168.0.120
+              gw      192.168.0.1
+        eth1 :
+              network 192.168.2.0
+              mask    255.255.255.0
+              ip      192.168.2.1
+              gw      192.168.0.1         //192.168.0.120
+        br test :
+              $brctl addbr test               //Creation of bridge
+              $brctl addif test eth0 eth1     //Add intfc to bridge
+              $ip link set dev test up        //Start the bridge
+
+WinXP :
+      network 192.168.2.0
+      mask    255.255.255.0
+      ip      192.168.2.3
+      gw      192.168.2.1
+
+*Notes -
+      - Bridge 'test' does not work whatsoever.
+      - No additional routes are added.
+      - CentOS[eth1] and WinXP are connected to internal network 'intnet0'.
+      - CentOS[eth0] is connected via 'bridge' mode.
