@@ -12,7 +12,7 @@
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
 
-#include "fw_func.c"
+#include "fw_helper.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
