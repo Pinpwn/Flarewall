@@ -66,12 +66,12 @@ unsigned int hook_func_in(unsigned int hooknum,
 			case 6:
         prot =	"TCP";
 				src_port = (unsigned int)ntohs(tcp_header->source);
-				dst_port = (unsigned int)ntohs(tcp_header->dst);
+				dst_port = (unsigned int)ntohs(tcp_header->dest);
 				break;
 			case 17:
         prot =	"UDP";
 				src_port = (unsigned int)ntohs(udp_header->source);
-        dst_port = (unsigned int)ntohs(udp_header->dst);
+        dst_port = (unsigned int)ntohs(udp_header->dest);
 				break;
 			default:
 				prot = "OTHER";
@@ -198,7 +198,9 @@ unsigned int hook_func_out(unsigned int hooknum,
 	*/
 
 	swap_intfc(skb->dev, out);
-	printk(KERN_INFO "skb->dev->name:%s && out->name:%s\n", skb->dev->name, out->name);
+  //swap_intfc(&skb->dev, &out)
+
+  printk(KERN_INFO "skb->dev->name:%s && out->name:%s\n", skb->dev->name, out->name);
 
 	switch(ip_header->protocol)
                         {
@@ -208,12 +210,12 @@ unsigned int hook_func_out(unsigned int hooknum,
                         case 6:
                                 prot =  "TCP";
                                 src_port = (unsigned int)ntohs(tcp_header->source);
-                                dst_port = (unsigned int)ntohs(tcp_header->dst);
+                                dst_port = (unsigned int)ntohs(tcp_header->dest);
                                 break;
                         case 17:
                                 prot =  "UDP";
                                 src_port = (unsigned int)ntohs(udp_header->source);
-                                dst_port = (unsigned int)ntohs(udp_header->dst);
+                                dst_port = (unsigned int)ntohs(udp_header->dest);
                                 break;
                         default:
                                 prot = "OTHER";
