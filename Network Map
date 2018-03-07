@@ -50,3 +50,5 @@ Working conf ->
 CentOS ->
         $modprobe iptable_nat
         $iptables -t nat -A POSTROUTING -o eth1 MASQUERADE
+
+        $route add default gw 192.168.0.1 eth0
