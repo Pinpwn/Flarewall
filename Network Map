@@ -45,3 +45,8 @@ WinXP :
       - No additional routes are added.
       - CentOS[eth1] and WinXP are connected to internal network 'intnet0'.
       - CentOS[eth0] is connected via 'bridge' mode.
+
+Working conf ->
+CentOS ->
+        $modprobe iptable_nat
+        $iptables -t nat -A POSTROUTING -o eth1 MASQUERADE
