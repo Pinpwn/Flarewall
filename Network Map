@@ -52,3 +52,388 @@ CentOS ->
         $iptables -t nat -A POSTROUTING -o eth1 MASQUERADE
 
         $route add default gw 192.168.0.1 eth0
+
+Logs ->
+Mar  7 23:37:48 localhost kernel: /proc/flarewall is createdn
+Mar  7 23:37:48 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:48 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:48 localhost kernel: --------------------------------------
+Mar  7 23:37:48 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:48 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:48 localhost kernel: eth0 set!
+Mar  7 23:37:48 localhost kernel: eth1 set!
+Mar  7 23:37:48 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:48 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:48 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:48 localhost kernel: ---------------------------------------n
+Mar  7 23:37:48 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:48 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:48 localhost kernel: --------------------------------------
+Mar  7 23:37:48 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:48 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:48 localhost kernel: eth0 set!
+Mar  7 23:37:48 localhost kernel: eth1 set!
+Mar  7 23:37:48 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:48 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:48 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:49 localhost kernel: ---------------------------------------n
+Mar  7 23:37:49 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:49 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:49 localhost kernel: --------------------------------------
+Mar  7 23:37:49 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:49 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:49 localhost kernel: eth0 set!
+Mar  7 23:37:49 localhost kernel: eth1 set!
+Mar  7 23:37:49 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:49 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:49 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:49 localhost kernel: ---------------------------------------n
+Mar  7 23:37:49 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:49 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:49 localhost kernel: --------------------------------------
+Mar  7 23:37:49 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:49 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:49 localhost kernel: eth0 set!
+Mar  7 23:37:49 localhost kernel: eth1 set!
+Mar  7 23:37:49 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:49 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:49 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:50 localhost kernel: ---------------------------------------n
+Mar  7 23:37:50 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:50 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:50 localhost kernel: --------------------------------------
+Mar  7 23:37:50 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:50 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:50 localhost kernel: eth0 set!
+Mar  7 23:37:50 localhost kernel: eth1 set!
+Mar  7 23:37:50 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:50 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:50 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:50 localhost kernel: ---------------------------------------n
+Mar  7 23:37:50 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:50 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:50 localhost kernel: --------------------------------------
+Mar  7 23:37:50 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:50 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:50 localhost kernel: eth0 set!
+Mar  7 23:37:50 localhost kernel: eth1 set!
+Mar  7 23:37:50 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:50 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:50 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:51 localhost kernel: ---------------------------------------n
+Mar  7 23:37:51 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:51 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:51 localhost kernel: --------------------------------------
+Mar  7 23:37:51 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:51 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:51 localhost kernel: eth0 set!
+Mar  7 23:37:51 localhost kernel: eth1 set!
+Mar  7 23:37:51 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:51 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:51 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:51 localhost kernel: ---------------------------------------n
+Mar  7 23:37:51 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:51 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:51 localhost kernel: --------------------------------------
+Mar  7 23:37:51 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:51 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:51 localhost kernel: eth0 set!
+Mar  7 23:37:51 localhost kernel: eth1 set!
+Mar  7 23:37:51 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:51 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:51 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:52 localhost kernel: ---------------------------------------n
+Mar  7 23:37:52 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:52 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:52 localhost kernel: --------------------------------------
+Mar  7 23:37:52 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:52 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:52 localhost kernel: eth0 set!
+Mar  7 23:37:52 localhost kernel: eth1 set!
+Mar  7 23:37:52 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:52 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:52 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:52 localhost kernel: ---------------------------------------n
+Mar  7 23:37:52 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:52 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:52 localhost kernel: --------------------------------------
+Mar  7 23:37:52 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:52 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:52 localhost kernel: eth0 set!
+Mar  7 23:37:52 localhost kernel: eth1 set!
+Mar  7 23:37:52 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:52 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:52 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:53 localhost kernel: ---------------------------------------n
+Mar  7 23:37:53 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:53 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:53 localhost kernel: --------------------------------------
+Mar  7 23:37:53 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:53 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:53 localhost kernel: eth0 set!
+Mar  7 23:37:53 localhost kernel: eth1 set!
+Mar  7 23:37:53 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:53 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:53 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:53 localhost kernel: ---------------------------------------n
+Mar  7 23:37:53 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:53 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:53 localhost kernel: --------------------------------------
+Mar  7 23:37:53 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:53 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:53 localhost kernel: eth0 set!
+Mar  7 23:37:53 localhost kernel: eth1 set!
+Mar  7 23:37:53 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:53 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:53 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:54 localhost kernel: ---------------------------------------n
+Mar  7 23:37:54 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.1.112. Sport: 0 Dport: 0
+Mar  7 23:37:54 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:54 localhost kernel: --------------------------------------
+Mar  7 23:37:54 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:37:54 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:54 localhost kernel: eth0 set!
+Mar  7 23:37:54 localhost kernel: eth1 set!
+Mar  7 23:37:54 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:37:54 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:37:54 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:54 localhost kernel: ---------------------------------------n
+Mar  7 23:37:54 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.1.121. Sport: 0 Dport: 0
+Mar  7 23:37:54 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:54 localhost kernel: --------------------------------------
+Mar  7 23:37:54 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:37:54 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:37:54 localhost kernel: eth0 set!
+Mar  7 23:37:54 localhost kernel: eth1 set!
+Mar  7 23:37:54 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:37:54 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:37:54 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:37:56 localhost kernel: ---------------------------------------n
+Mar  7 23:37:56 localhost kernel: IN: UDP packet from 192.168.0.106 to 192.168.0.255. Sport: 17664 Dport: 72
+Mar  7 23:37:56 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:37:56 localhost kernel: --------------------------------------
+Mar  7 23:38:12 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.0.106. Sport: 0 Dport: 0
+Mar  7 23:38:12 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:12 localhost kernel: --------------------------------------
+Mar  7 23:38:12 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:12 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:12 localhost kernel: eth0 set!
+Mar  7 23:38:12 localhost kernel: eth1 set!
+Mar  7 23:38:12 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:12 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:12 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:12 localhost kernel: ---------------------------------------n
+Mar  7 23:38:12 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:12 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:12 localhost kernel: --------------------------------------
+Mar  7 23:38:12 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:12 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:12 localhost kernel: eth0 set!
+Mar  7 23:38:12 localhost kernel: eth1 set!
+Mar  7 23:38:12 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:12 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:12 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:13 localhost kernel: ---------------------------------------n
+Mar  7 23:38:13 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.0.106. Sport: 0 Dport: 0
+Mar  7 23:38:13 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:13 localhost kernel: --------------------------------------
+Mar  7 23:38:13 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:13 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:13 localhost kernel: eth0 set!
+Mar  7 23:38:13 localhost kernel: eth1 set!
+Mar  7 23:38:13 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:13 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:13 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:13 localhost kernel: ---------------------------------------n
+Mar  7 23:38:13 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:13 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:13 localhost kernel: --------------------------------------
+Mar  7 23:38:13 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:13 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:13 localhost kernel: eth0 set!
+Mar  7 23:38:13 localhost kernel: eth1 set!
+Mar  7 23:38:13 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:13 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:13 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:14 localhost kernel: ---------------------------------------n
+Mar  7 23:38:14 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.0.106. Sport: 0 Dport: 0
+Mar  7 23:38:14 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:14 localhost kernel: --------------------------------------
+Mar  7 23:38:14 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:14 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:14 localhost kernel: eth0 set!
+Mar  7 23:38:14 localhost kernel: eth1 set!
+Mar  7 23:38:14 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:14 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:14 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:14 localhost kernel: ---------------------------------------n
+Mar  7 23:38:14 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:14 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:14 localhost kernel: --------------------------------------
+Mar  7 23:38:14 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:14 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:14 localhost kernel: eth0 set!
+Mar  7 23:38:14 localhost kernel: eth1 set!
+Mar  7 23:38:14 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:14 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:14 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:15 localhost kernel: ---------------------------------------n
+Mar  7 23:38:15 localhost kernel: IN: ICMP packet from 192.168.1.112 to 192.168.0.106. Sport: 0 Dport: 0
+Mar  7 23:38:15 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:15 localhost kernel: --------------------------------------
+Mar  7 23:38:15 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:15 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:15 localhost kernel: eth0 set!
+Mar  7 23:38:15 localhost kernel: eth1 set!
+Mar  7 23:38:15 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:15 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:15 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:15 localhost kernel: ---------------------------------------n
+Mar  7 23:38:15 localhost kernel: IN: ICMP packet from 192.168.0.106 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:15 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:15 localhost kernel: --------------------------------------
+Mar  7 23:38:15 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:15 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:15 localhost kernel: eth0 set!
+Mar  7 23:38:15 localhost kernel: eth1 set!
+Mar  7 23:38:15 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:15 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:15 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:20 localhost kernel: ---------------------------------------n
+Mar  7 23:38:20 localhost kernel: IN: ICMP packet from 192.168.1.112 to 8.8.8.8. Sport: 0 Dport: 0
+Mar  7 23:38:20 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:20 localhost kernel: --------------------------------------
+Mar  7 23:38:20 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:20 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:20 localhost kernel: eth0 set!
+Mar  7 23:38:20 localhost kernel: eth1 set!
+Mar  7 23:38:20 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:20 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:20 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:20 localhost kernel: ---------------------------------------n
+Mar  7 23:38:20 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:20 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:20 localhost kernel: --------------------------------------
+Mar  7 23:38:20 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:20 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:20 localhost kernel: eth0 set!
+Mar  7 23:38:20 localhost kernel: eth1 set!
+Mar  7 23:38:20 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:20 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:20 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:20 localhost kernel: ---------------------------------------n
+Mar  7 23:38:20 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:20 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:20 localhost kernel: --------------------------------------
+Mar  7 23:38:20 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:20 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:20 localhost kernel: eth0 set!
+Mar  7 23:38:20 localhost kernel: eth1 set!
+Mar  7 23:38:20 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:20 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:20 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:21 localhost kernel: ---------------------------------------n
+Mar  7 23:38:21 localhost kernel: IN: ICMP packet from 192.168.1.112 to 8.8.8.8. Sport: 0 Dport: 0
+Mar  7 23:38:21 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:21 localhost kernel: --------------------------------------
+Mar  7 23:38:21 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:21 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:21 localhost kernel: eth0 set!
+Mar  7 23:38:21 localhost kernel: eth1 set!
+Mar  7 23:38:21 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:21 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:21 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:21 localhost kernel: ---------------------------------------n
+Mar  7 23:38:21 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:21 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:21 localhost kernel: --------------------------------------
+Mar  7 23:38:21 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:21 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:21 localhost kernel: eth0 set!
+Mar  7 23:38:21 localhost kernel: eth1 set!
+Mar  7 23:38:21 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:21 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:21 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:21 localhost kernel: ---------------------------------------n
+Mar  7 23:38:21 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:21 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:21 localhost kernel: --------------------------------------
+Mar  7 23:38:21 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:21 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:21 localhost kernel: eth0 set!
+Mar  7 23:38:21 localhost kernel: eth1 set!
+Mar  7 23:38:21 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:21 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:21 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:22 localhost kernel: ---------------------------------------n
+Mar  7 23:38:22 localhost kernel: IN: ICMP packet from 192.168.1.112 to 8.8.8.8. Sport: 0 Dport: 0
+Mar  7 23:38:22 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:22 localhost kernel: --------------------------------------
+Mar  7 23:38:22 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:22 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:22 localhost kernel: eth0 set!
+Mar  7 23:38:22 localhost kernel: eth1 set!
+Mar  7 23:38:22 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:22 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:22 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:22 localhost kernel: ---------------------------------------n
+Mar  7 23:38:22 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:22 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:22 localhost kernel: --------------------------------------
+Mar  7 23:38:22 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:22 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:22 localhost kernel: eth0 set!
+Mar  7 23:38:22 localhost kernel: eth1 set!
+Mar  7 23:38:22 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:22 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:22 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:22 localhost kernel: ---------------------------------------n
+Mar  7 23:38:22 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:22 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:22 localhost kernel: --------------------------------------
+Mar  7 23:38:22 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:22 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:22 localhost kernel: eth0 set!
+Mar  7 23:38:22 localhost kernel: eth1 set!
+Mar  7 23:38:22 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:22 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:22 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:23 localhost kernel: ---------------------------------------n
+Mar  7 23:38:23 localhost kernel: IN: ICMP packet from 192.168.1.112 to 8.8.8.8. Sport: 0 Dport: 0
+Mar  7 23:38:23 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:23 localhost kernel: --------------------------------------
+Mar  7 23:38:23 localhost kernel: dev->name:eth0 && out->name:eth0
+Mar  7 23:38:23 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:23 localhost kernel: eth0 set!
+Mar  7 23:38:23 localhost kernel: eth1 set!
+Mar  7 23:38:23 localhost kernel: ------swapped netdev : out : eth0->eth1------
+Mar  7 23:38:23 localhost kernel: skb->dev->name:eth0 && out->name:eth0
+Mar  7 23:38:23 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:23 localhost kernel: ---------------------------------------n
+Mar  7 23:38:23 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:23 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:23 localhost kernel: --------------------------------------
+Mar  7 23:38:23 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:23 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:23 localhost kernel: eth0 set!
+Mar  7 23:38:23 localhost kernel: eth1 set!
+Mar  7 23:38:23 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:23 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:23 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:23 localhost kernel: ---------------------------------------n
+Mar  7 23:38:23 localhost kernel: IN: ICMP packet from 8.8.8.8 to 192.168.0.120. Sport: 0 Dport: 0
+Mar  7 23:38:23 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:23 localhost kernel: --------------------------------------
+Mar  7 23:38:23 localhost kernel: dev->name:eth1 && out->name:eth1
+Mar  7 23:38:23 localhost kernel: eth0->name:eth0 && eth1->name:eth1
+Mar  7 23:38:23 localhost kernel: eth0 set!
+Mar  7 23:38:23 localhost kernel: eth1 set!
+Mar  7 23:38:23 localhost kernel: ------swapped netdev : out : eth1->eth0------
+Mar  7 23:38:23 localhost kernel: skb->dev->name:eth1 && out->name:eth1
+Mar  7 23:38:23 localhost kernel: No matching is found, accept the packetn
+Mar  7 23:38:26 localhost kernel: ---------------------------------------n
+Mar  7 23:38:26 localhost kernel: IN: UDP packet from 192.168.0.106 to 192.168.0.255. Sport: 17664 Dport: 72
+Mar  7 23:38:26 localhost kernel: No matches found, ACCEPTING the packet
+Mar  7 23:38:26 localhost kernel: --------------------------------------
+Mar  7 23:38:35 localhost kernel: Free policy lists
+Mar  7 23:38:35 localhost kernel: Flarewall module unloaded.
