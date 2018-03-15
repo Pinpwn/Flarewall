@@ -11,6 +11,7 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
+#include "net/ipv4/netfilter/ip_nat_standalone.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
@@ -554,7 +555,7 @@ int procf_write(struct file *file, const char *buffer, unsigned long count, void
   		printk(KERN_INFO "GAZAB HO GYA!\n");
   	}
   */
-
+/**
   void swap_intfc(struct net_device *dev, struct net_device *out)
           {
   	printk(KERN_INFO "dev->name:%s && out->name:%s\n", dev->name, out->name);
@@ -603,3 +604,4 @@ int procf_write(struct file *file, const char *buffer, unsigned long count, void
           else
                   printk(KERN_INFO "GAZAB HO GYA!\n");
           }
+**/
