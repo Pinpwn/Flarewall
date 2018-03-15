@@ -13,6 +13,7 @@
 #include <linux/netdevice.h>
 
 #include "fw_helper.c"
+#include "ip_nat_standalone.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
@@ -197,7 +198,7 @@ unsigned int hook_func_out(unsigned int hooknum,
 	printk(KERN_INFO "eth0->name:%s && eth1->name:%s", eth0->name, eth1->name);
 	*/
 
-	swap_intfc(skb->dev, out);
+	//swap_intfc(skb->dev, out);
   //swap_intfc(&skb->dev, &out)
 
   printk(KERN_INFO "skb->dev->name:%s && out->name:%s\n", skb->dev->name, out->name);
@@ -334,6 +335,10 @@ int init_module()
 
 	//For testing purpose
         //add_a_test_rule();
+
+        //- start of nat_standalone integration
+        return init_or_cleanup(1);
+
         return 0;
         }
 
@@ -344,6 +349,10 @@ void cleanup_module()
         nf_unregister_hook(&nfho);
         nf_unregister_hook(&nfho_out);
         printk(KERN_INFO "Free policy lists\n");
+
+  //- start of nat_standalone integration
+  init_or_cleanup(0);
+
 
 	list_for_each_safe(p, q, &policy_list.list)
                 {
