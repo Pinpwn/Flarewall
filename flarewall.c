@@ -374,3 +374,4 @@ void cleanup_module()
   EXPORT_SYMBOL_GPL(nf_nat_icmp_reply_translation);
   EXPORT_SYMBOL_GPL(dynamic_debug_enabled);
   EXPORT_SYMBOL_GPL(nf_nat_packet);
+  EXPORT_SYMBOL_GPL(nf_conntrack_untracked);
