@@ -369,9 +369,11 @@ void cleanup_module()
 	printk(KERN_INFO "Flarewall module unloaded.\n");
 	}
 
+/**
   EXPORT_SYMBOL_GPL(need_ipv4_conntrack);
   EXPORT_SYMBOL_GPL(dynamic_debug_enabled2);
   EXPORT_SYMBOL_GPL(nf_nat_icmp_reply_translation);
   EXPORT_SYMBOL_GPL(dynamic_debug_enabled);
   EXPORT_SYMBOL_GPL(nf_nat_packet);
   EXPORT_SYMBOL_GPL(nf_conntrack_untracked);
+**/
