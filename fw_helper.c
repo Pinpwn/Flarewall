@@ -11,7 +11,6 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
-#include "net/ipv4/netfilter/ip_nat_standalone.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
