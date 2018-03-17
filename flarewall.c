@@ -18,7 +18,7 @@
 #include "nf_nat_standalone.c"
 
 /****************************************************/
-MODULE_LICENSE("GPL v3.0");
+MODULE_LICENSE("GPL");
 
 MODULE_DESCRIPTION("Flarewall");
 
