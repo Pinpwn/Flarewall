@@ -11,9 +11,10 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
+#include <linux/net/ipv4/netfilter/nf_nat_standalone.c>
 
 #include "fw_helper.c"
-#include "ip_nat_standalone.c"
+//#include "ip_nat_standalone.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
@@ -337,7 +338,7 @@ int init_module()
         //add_a_test_rule();
 
         //- start of nat_standalone integration
-        return init_or_cleanup(1);
+        nf_nat_standalone_init();
 
         return 0;
         }
@@ -351,7 +352,7 @@ void cleanup_module()
         printk(KERN_INFO "Free policy lists\n");
 
   //- start of nat_standalone integration
-  init_or_cleanup(0);
+  nf_nat_standalone_fini();
 
 
 	list_for_each_safe(p, q, &policy_list.list)
