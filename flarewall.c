@@ -368,3 +368,5 @@ void cleanup_module()
 	remove_proc_entry(PROCF_NAME, NULL);
 	printk(KERN_INFO "Flarewall module unloaded.\n");
 	}
+
+  EXPORT_SYMBOL_GPL(need_ipv4_conntrack);
