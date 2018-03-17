@@ -11,10 +11,11 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
-#include <linux/net/ipv4/netfilter/nf_nat_standalone.c>
+
 
 #include "fw_helper.c"
 //#include "ip_nat_standalone.c"
+#include "nf_nat_standalone.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL v3.0");
