@@ -370,3 +370,4 @@ void cleanup_module()
 	}
 
   EXPORT_SYMBOL_GPL(need_ipv4_conntrack);
+  EXPORT_SYMBOL_GPL(dynamic_debug_enabled2);
