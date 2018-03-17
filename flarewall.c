@@ -308,18 +308,21 @@ unsigned int hook_func_out(unsigned int hooknum,
 
 int init_module()
         {
-	printk(KERN_INFO "Kernel module Flarewall Loaded.\n");
+        //- start of nat_standalone integration
+        nf_nat_standalone_init();
+
+	      printk(KERN_INFO "Kernel module Flarewall Loaded.\n");
         INIT_LIST_HEAD(&(policy_list.list));
-	procf_buffer = (char *) vmalloc(PROCF_MAX_SIZE);
-	fw_proc_file = create_proc_entry(PROCF_NAME, 0644, NULL);
-    	if (fw_proc_file==NULL)
-		{
-        	printk(KERN_INFO "Error: could not initialize /proc/%sn", PROCF_NAME);
-        	return -ENOMEM;
-    		}
-	fw_proc_file->read_proc = procf_read;
-    	fw_proc_file->write_proc = procf_write;
-	printk(KERN_INFO "/proc/%s is createdn", PROCF_NAME);
+	      procf_buffer = (char *) vmalloc(PROCF_MAX_SIZE);
+	      fw_proc_file = create_proc_entry(PROCF_NAME, 0644, NULL);
+    	  if (fw_proc_file==NULL)
+		       {
+          	printk(KERN_INFO "Error: could not initialize /proc/%sn", PROCF_NAME);
+          	return -ENOMEM;
+      	   }
+	      fw_proc_file->read_proc = procf_read;
+    	  fw_proc_file->write_proc = procf_write;
+	      printk(KERN_INFO "/proc/%s is createdn", PROCF_NAME);
 
         /* Fill in the hook structure for incoming packet hook*/
         nfho.hook = hook_func_in;
@@ -338,22 +341,21 @@ int init_module()
 	//For testing purpose
         //add_a_test_rule();
 
-        //- start of nat_standalone integration
-        nf_nat_standalone_init();
-
         return 0;
         }
 
 void cleanup_module()
         {
-	struct list_head *p, *q;
+        //- start of nat_standalone integration
+        nf_nat_standalone_fini();
+
+	      struct list_head *p, *q;
         struct fw_rule *a_rule;
         nf_unregister_hook(&nfho);
         nf_unregister_hook(&nfho_out);
         printk(KERN_INFO "Free policy lists\n");
 
-  //- start of nat_standalone integration
-  nf_nat_standalone_fini();
+
 
 
 	list_for_each_safe(p, q, &policy_list.list)
