@@ -324,8 +324,8 @@ static void __exit nf_nat_standalone_fini(void)
 	/* Conntrack caches are unregistered in nf_conntrack_cleanup */
 }
 
-module_init(nf_nat_standalone_init);
-module_exit(nf_nat_standalone_fini);
+//module_init(nf_nat_standalone_init);
+//module_exit(nf_nat_standalone_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip_nat");
