@@ -1,460 +1,328 @@
-#include <linux/kernel.h>
-
-#include <linux/module.h>
-
-#include <linux/netfilter.h>
-
-#include <linux/netfilter_ipv4.h>
-#include <linux/socket.h>
-#include <net/sock.h>
+#include <linux/types.h>
+#include <linux/icmp.h>
 #include <linux/ip.h>
-#include <linux/tcp.h>
-#include <linux/net.h>
-#include <linux/string.h>
-#include <linux/in.h>
-#include <linux/time.h>
-#include <net/tcp.h>
-#define MAX_NAT_ENTRIES 65535
-#define SET_ENTRY 133
-#define RWPERM 0644
+#include <linux/netfilter.h>
+#include <linux/netfilter_ipv4.h>
+#include <linux/module.h>
+#include <linux/skbuff.h>
+#include <linux/proc_fs.h>
+#include <net/ip.h>
+#include <net/checksum.h>
+#include <linux/spinlock.h>
 
-/* NAT table entry*/
-struct nat_entry {
- __be32 lan_ipaddr;
- __be16 lan_port;
-//	__be16 nat_port;
- unsigned long sec;	/*timestamp in seconds*/
- u_int8_t valid;
+#include <net/netfilter/nf_conntrack.h>
+#include <net/netfilter/nf_conntrack_core.h>
+#include <net/netfilter/nf_conntrack_extend.h>
+#include <net/netfilter/nf_nat.h>
+#include <net/netfilter/nf_nat_rule.h>
+#include <net/netfilter/nf_nat_protocol.h>
+#include <net/netfilter/nf_nat_core.h>
+#include <net/netfilter/nf_nat_helper.h>
+#include <linux/netfilter_ipv4/ip_tables.h>
+
+//alloc_null_binding(struct nf_conn *ct, unsigned int hooknum);
+
+#ifdef CONFIG_XFRM
+static void nat_decode_session(struct sk_buff *skb, struct flowi *fl)
+{
+	const struct nf_conn *ct;
+	const struct nf_conntrack_tuple *t;
+	enum ip_conntrack_info ctinfo;
+	enum ip_conntrack_dir dir;
+	unsigned long statusbit;
+
+	ct = nf_ct_get(skb, &ctinfo);
+	if (ct == NULL)
+		return;
+	dir = CTINFO2DIR(ctinfo);
+	t = &ct->tuplehash[dir].tuple;
+
+	if (dir == IP_CT_DIR_ORIGINAL)
+		statusbit = IPS_DST_NAT;
+	else
+		statusbit = IPS_SRC_NAT;
+
+	if (ct->status & statusbit) {
+		fl->fl4_dst = t->dst.u3.ip;
+		if (t->dst.protonum == IPPROTO_TCP ||
+		    t->dst.protonum == IPPROTO_UDP ||
+		    t->dst.protonum == IPPROTO_UDPLITE ||
+		    t->dst.protonum == IPPROTO_DCCP ||
+		    t->dst.protonum == IPPROTO_SCTP)
+			fl->fl_ip_dport = t->dst.u.tcp.port;
+	}
+
+	statusbit ^= IPS_NAT_MASK;
+
+	if (ct->status & statusbit) {
+		fl->fl4_src = t->src.u3.ip;
+		if (t->dst.protonum == IPPROTO_TCP ||
+		    t->dst.protonum == IPPROTO_UDP ||
+		    t->dst.protonum == IPPROTO_UDPLITE ||
+		    t->dst.protonum == IPPROTO_DCCP ||
+		    t->dst.protonum == IPPROTO_SCTP)
+			fl->fl_ip_sport = t->src.u.tcp.port;
+	}
+}
+#endif
+
+static unsigned int
+nf_nat_fn(unsigned int hooknum,
+	  struct sk_buff *skb,
+	  const struct net_device *in,
+	  const struct net_device *out,
+	  int (*okfn)(struct sk_buff *))
+{
+	struct nf_conn *ct;
+	enum ip_conntrack_info ctinfo;
+	struct nf_conn_nat *nat;
+	/* maniptype == SRC for postrouting. */
+	enum nf_nat_manip_type maniptype = HOOK2MANIP(hooknum);
+
+	/* We never see fragments: conntrack defrags on pre-routing
+	   and local-out, and nf_nat_out protects post-routing. */
+	NF_CT_ASSERT(!(ip_hdr(skb)->frag_off & htons(IP_MF | IP_OFFSET)));
+
+	ct = nf_ct_get(skb, &ctinfo);
+	/* Can't track?  It's not due to stress, or conntrack would
+	   have dropped it.  Hence it's the user's responsibilty to
+	   packet filter it out, or implement conntrack/NAT for that
+	   protocol. 8) --RR */
+	if (!ct)
+		return NF_ACCEPT;
+
+	/* Don't try to NAT if this packet is not conntracked */
+	if (ct == &nf_conntrack_untracked)
+		return NF_ACCEPT;
+
+	nat = nfct_nat(ct);
+	if (!nat) {
+		/* NAT module was loaded late. */
+		if (nf_ct_is_confirmed(ct))
+			return NF_ACCEPT;
+		nat = nf_ct_ext_add(ct, NF_CT_EXT_NAT, GFP_ATOMIC);
+		if (nat == NULL) {
+			pr_debug("failed to add NAT extension\n");
+			return NF_ACCEPT;
+		}
+	}
+
+	switch (ctinfo) {
+	case IP_CT_RELATED:
+	case IP_CT_RELATED+IP_CT_IS_REPLY:
+		if (ip_hdr(skb)->protocol == IPPROTO_ICMP) {
+			if (!nf_nat_icmp_reply_translation(ct, ctinfo,
+							   hooknum, skb))
+				return NF_DROP;
+			else
+				return NF_ACCEPT;
+		}
+		/* Fall thru... (Only ICMPs can be IP_CT_IS_REPLY) */
+	case IP_CT_NEW:
+
+		/* Seen it before?  This can happen for loopback, retrans,
+		   or local packets.. */
+		if (!nf_nat_initialized(ct, maniptype)) {
+			unsigned int ret;
+
+			if (hooknum == NF_INET_LOCAL_IN)
+				/* LOCAL_IN hook doesn't have a chain!  */
+				ret = alloc_null_binding(ct, hooknum);
+			else
+				ret = nf_nat_rule_find(skb, hooknum, in, out,
+						       ct);
+
+			if (ret != NF_ACCEPT) {
+				return ret;
+			}
+		} else
+			pr_debug("Already setup manip %s for ct %p\n",
+				 maniptype == IP_NAT_MANIP_SRC ? "SRC" : "DST",
+				 ct);
+		break;
+
+	default:
+		/* ESTABLISHED */
+		NF_CT_ASSERT(ctinfo == IP_CT_ESTABLISHED ||
+			     ctinfo == (IP_CT_ESTABLISHED+IP_CT_IS_REPLY));
+	}
+
+	return nf_nat_packet(ct, ctinfo, hooknum, skb);
+}
+
+/**
+static unsigned int
+nf_nat_in(unsigned int hooknum,
+	  struct sk_buff *skb,
+	  const struct net_device *in,
+	  const struct net_device *out,
+	  int (*okfn)(struct sk_buff *))
+{
+	unsigned int ret;
+	__be32 daddr = ip_hdr(skb)->daddr;
+
+	ret = nf_nat_fn(hooknum, skb, in, out, okfn);
+	if (ret != NF_DROP && ret != NF_STOLEN &&
+	    daddr != ip_hdr(skb)->daddr)
+		skb_dst_drop(skb);
+
+	return ret;
+}
+
+static unsigned int
+nf_nat_out(unsigned int hooknum,
+	   struct sk_buff *skb,
+	   const struct net_device *in,
+	   const struct net_device *out,
+	   int (*okfn)(struct sk_buff *))
+{
+#ifdef CONFIG_XFRM
+	const struct nf_conn *ct;
+	enum ip_conntrack_info ctinfo;
+#endif
+	unsigned int ret;
+
+	/* root is playing with raw sockets. */
+	if (skb->len < sizeof(struct iphdr) ||
+	    ip_hdrlen(skb) < sizeof(struct iphdr))
+		return NF_ACCEPT;
+
+	ret = nf_nat_fn(hooknum, skb, in, out, okfn);
+#ifdef CONFIG_XFRM
+	if (ret != NF_DROP && ret != NF_STOLEN &&
+	    (ct = nf_ct_get(skb, &ctinfo)) != NULL) {
+		enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+
+		if (ct->tuplehash[dir].tuple.src.u3.ip !=
+		    ct->tuplehash[!dir].tuple.dst.u3.ip
+		    || ct->tuplehash[dir].tuple.src.u.all !=
+		       ct->tuplehash[!dir].tuple.dst.u.all
+		    )
+			return ip_xfrm_me_harder(skb) == 0 ? ret : NF_DROP;
+	}
+#endif
+	return ret;
+}
+
+static unsigned int
+nf_nat_local_fn(unsigned int hooknum,
+		struct sk_buff *skb,
+		const struct net_device *in,
+		const struct net_device *out,
+		int (*okfn)(struct sk_buff *))
+{
+	const struct nf_conn *ct;
+	enum ip_conntrack_info ctinfo;
+	unsigned int ret;
+
+	/* root is playing with raw sockets. */
+	if (skb->len < sizeof(struct iphdr) ||
+	    ip_hdrlen(skb) < sizeof(struct iphdr))
+		return NF_ACCEPT;
+
+	ret = nf_nat_fn(hooknum, skb, in, out, okfn);
+	if (ret != NF_DROP && ret != NF_STOLEN &&
+	    (ct = nf_ct_get(skb, &ctinfo)) != NULL) {
+		enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+
+		if (ct->tuplehash[dir].tuple.dst.u3.ip !=
+		    ct->tuplehash[!dir].tuple.src.u3.ip) {
+			if (ip_route_me_harder(skb, RTN_UNSPEC))
+				ret = NF_DROP;
+		}
+#ifdef CONFIG_XFRM
+		else if (ct->tuplehash[dir].tuple.dst.u.all !=
+			 ct->tuplehash[!dir].tuple.src.u.all)
+			if (ip_xfrm_me_harder(skb))
+				ret = NF_DROP;
+#endif
+	}
+	return ret;
+}
+
+/* We must be after connection tracking and before packet filtering. */
+
+static struct nf_hook_ops nf_nat_ops[] __read_mostly = {
+	/* Before packet filtering, change destination */
+	{
+		.hook		= nf_nat_in,
+		.owner		= THIS_MODULE,
+		.pf		= NFPROTO_IPV4,
+		.hooknum	= NF_INET_PRE_ROUTING,
+		.priority	= NF_IP_PRI_NAT_DST,
+	},
+	/* After packet filtering, change source */
+	{
+		.hook		= nf_nat_out,
+		.owner		= THIS_MODULE,
+		.pf		= NFPROTO_IPV4,
+		.hooknum	= NF_INET_POST_ROUTING,
+		.priority	= NF_IP_PRI_NAT_SRC,
+	},
+	/* Before packet filtering, change destination */
+	{
+		.hook		= nf_nat_local_fn,
+		.owner		= THIS_MODULE,
+		.pf		= NFPROTO_IPV4,
+		.hooknum	= NF_INET_LOCAL_OUT,
+		.priority	= NF_IP_PRI_NAT_DST,
+	},
+	/* After packet filtering, change source */
+	{
+		.hook		= nf_nat_fn,
+		.owner		= THIS_MODULE,
+		.pf		= NFPROTO_IPV4,
+		.hooknum	= NF_INET_LOCAL_IN,
+		.priority	= NF_IP_PRI_NAT_SRC,
+	},
 };
 
-/*the NAT table is indexed by the translated port i.e. source port after NAT for outgoing packet*/
-static struct nat_entry nat_table[MAX_NAT_ENTRIES];
-
-static __be32 myip;
-static __be32 priv_ip_mask;
-static __be32 priv_ip_first;
-static int start = 0;
-static int timeout = 60;
-static char lanstr[20] = "192.168.56.0/24";
-static u_int16_t port = 10000;
-module_param(start, int, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-
-/*proc fs entries */
-static struct proc_dir_entry *knat;
-static struct proc_dir_entry *proc_ip, *proc_lan, *proc_timeout;
-
-/*helper routines for IP address conversion*/
-unsigned long ip_asc_to_int(char *strip)
+static int __init nf_nat_standalone_init(void)
 {
- unsigned long ip;
-       unsigned int a[4];
+	int ret = 0;
 
-       sscanf(strip, "%u.%u.%u.%u", &a[0], &a[1], &a[2], &a[3]);
-       ip = (a[0] << 24)+(a[1] << 16)+(a[2] << 8)+a[3] ;
- return ip;
+	need_ipv4_conntrack();
+
+#ifdef CONFIG_XFRM
+	BUG_ON(ip_nat_decode_session != NULL);
+	rcu_assign_pointer(ip_nat_decode_session, nat_decode_session);
+#endif
+	ret = nf_nat_rule_init();
+	if (ret < 0) {
+		printk("nf_nat_init: can't setup rules.\n");
+		goto cleanup_decode_session;
+	}
+	ret = nf_register_hooks(nf_nat_ops, ARRAY_SIZE(nf_nat_ops));
+	if (ret < 0) {
+		printk("nf_nat_init: can't register hooks.\n");
+		goto cleanup_rule_init;
+	}
+	return ret;
+
+ cleanup_rule_init:
+	nf_nat_rule_cleanup();
+ cleanup_decode_session:
+#ifdef CONFIG_XFRM
+	rcu_assign_pointer(ip_nat_decode_session, NULL);
+	synchronize_net();
+#endif
+	return ret;
 }
 
-void inet_ntoa(char *tmp, u_int32_t int_ip)
+static void __exit nf_nat_standalone_fini(void)
 {
-
- sprintf(tmp, "%d.%d.%d.%d",  (int_ip) & 0xFF,									(int_ip >> 8 ) & 0xFF,(int_ip >> 16) & 0xFF,(int_ip >> 24) & 0xFF);
- return;
+	nf_unregister_hooks(nf_nat_ops, ARRAY_SIZE(nf_nat_ops));
+	nf_nat_rule_cleanup();
+#ifdef CONFIG_XFRM
+	rcu_assign_pointer(ip_nat_decode_session, NULL);
+	synchronize_net();
+#endif
+	/* Conntrack caches are unregistered in nf_conntrack_cleanup */
 }
+**/
 
-/*proc fs read write*/
-
-static int proc_read_ip(char *page, char **start,
-     off_t off, int count,
-     int *eof, void *data)
-{
- char tmp[16];
- int len;
- if(off > 0)
- {
-   *eof = 1;
-   return 0;
- }
- inet_ntoa(tmp, myip);
- len = sprintf(page, "%s\n",  tmp);
- return len;
-}
-static int proc_write_ip(struct file *file,
-     const char *buffer,
-     unsigned long count,
-     void *data)
-{
-
- char tmp[16];
- if(count > 15)
- {
-   //don't try to convert that string.
-   return -ENOSPC;
- }
-
- if(copy_from_user(tmp, buffer, count)){
-   return -EFAULT;
- }
- tmp[count] = '\0';
- myip = htonl(ip_asc_to_int(tmp));
- return count;
-}
-static int proc_read_timeout(char *page, char **start,
-     off_t off, int count,
-     int *eof, void *data)
-{
- int len;
- if(off > 0)
- {
-   *eof = 1;
-   return 0;
- }
- len = sprintf(page, "%u\n",  timeout);
- return len;
-}
-static int proc_write_timeout(struct file *file,
-     const char *buffer,
-     unsigned long count,
-     void *data)
-{
-
-#define MAX_TIMEOUT_LEN_CHARS 6
- char tmp[10];
- if(count > MAX_TIMEOUT_LEN_CHARS)
- {
-   //don't try to convert that string.
-   return -EFAULT;
- }
-
- if(copy_from_user(tmp, buffer, count)){
-   return -EFAULT;
- }
- tmp[count] = '\0';
- timeout = simple_strtoul(tmp, NULL, 10);
- return count;
-}
-static int proc_read_lan(char *page, char **start,
-     off_t off, int count,
-     int *eof, void *data)
-{
- int len;
- if(off > 0)
- {
-   *eof = 1;
-   return 0;
- }
- len = sprintf(page, "%s\n",  lanstr);
- return len;
-}
-static int proc_write_lan(struct file *file,
-     const char *buffer,
-     unsigned long count,
-     void *data)
-{
-
- int  mask, i;
- char tmp[20];
- char *s;
- u_int32_t le_mask = 0;
- if(count > 20)
- {
-   //don't try to convert that string.
-   return -EFAULT;
- }
-
- if(copy_from_user(lanstr, buffer, count)){
-   return -EFAULT;
- }
- lanstr[count] = '\0';
- strncpy(tmp, lanstr, count+1);
- s = strstr(tmp, "/");
- if(s == NULL)
- {
-   return -EFAULT;
- }
- *s = '\0';
- s++;
-
- priv_ip_first = htonl(ip_asc_to_int(tmp));
- mask  = (simple_strtoul(s, NULL, 10));
- for(i = 0; i < mask; i++)
- {
-   le_mask = le_mask << 1;
-   le_mask = le_mask | 1;
- }
- priv_ip_mask = le_mask;
- return count;
-}
-
-/* update the checksums for tcp and ip*/
-void update_tcp_ip_checksum(struct sk_buff *skb, struct tcphdr *tcph,
- struct iphdr *iph)
-{
-
- int len;
- if (!skb || !iph || !tcph) return ;
- len = skb->len;
-
-/*update ip checksum*/
- iph->check = 0;
- iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
-/*update tcp checksum */
- tcph->check = 0;
- tcph->check = tcp_v4_check(
-     len - 4*iph->ihl,
-     iph->saddr, iph->daddr,
-     csum_partial((char *)tcph, len-4*iph->ihl,
-       0));
- return;
-
-}
-
-/*find the nat table entry for given lan port.
-@sport = source port as obtained from packet from lan*/
-__be16 find_nat_entry(__be32 saddr, __be16 sport)
-{
- int i = 0;
- unsigned int t = 0;
- for(i = 0; i < MAX_NAT_ENTRIES; i++)
- {
-   if((nat_table[i].lan_ipaddr == saddr) && (nat_table[i].lan_port == sport) && nat_table[i].valid)
-   {
-     t = (get_seconds() - nat_table[i].sec);
-     if(t > timeout)
-     {
-       printk("NAT Entry timeout\n");
-       nat_table[i].valid = 0;
-       return 0;
-     }
-     return i;
-   }
- }
- return 0;
-}
-static struct nf_hook_ops netfilter_ops_in, netfilter_ops_pre;
-
-/*PRE ROUTING Hook: In this we do DNAT
-For packets coming from WAN, destination IP and port are changed to lan ip and port from NAT Table entries */
-
-unsigned int main_hook_pre(unsigned int hooknum,
-
-   struct sk_buff *skb,
-
-   const struct net_device *in,
-
-   const struct net_device *out,
-
-   int (*okfn)(struct sk_buff*))
-
-{
-
- struct iphdr *iph;
- struct tcphdr *tcph;
- __be16 lan_port;
-
-
- if(start == 0)
-   return NF_ACCEPT;
- if (!skb) return NF_ACCEPT;
-
- printk("PRE ROUTING");
-
-
- iph = ip_hdr(skb);
-
- if (!iph) return NF_ACCEPT;
-
-
- if (iph->protocol==IPPROTO_TCP)
- {
-   if(iph->daddr == myip)
-   {
-     tcph = (struct tcphdr*)((char *)iph + iph->ihl*4);
-     if(!tcph) return NF_ACCEPT;
-     if(nat_table[tcph->dest].valid == SET_ENTRY)
-     {
-       /*lazy checking of stale entries*/
-       if((get_seconds() - nat_table[tcph->dest].sec) > timeout)
-       {
-         /*stale entry which means we do not have a NAT entry for this packet*/
-         nat_table[tcph->dest].valid = 0;
-         return NF_ACCEPT;
-       }
-       /*translate ip addr and port*/
-       lan_port = nat_table[tcph->dest].lan_port;
-       iph->daddr = nat_table[tcph->dest].lan_ipaddr;
-       tcph->dest = lan_port;
-       //re-calculate checksum
-       update_tcp_ip_checksum(skb, tcph, iph);
-     }
-   }
- }
-
-
- return NF_ACCEPT;
-
-}
-
-/*POST ROUTING hook: We do SNAT here.
-Packets from LAN - source IP and port are translated to public IP and sent out*/
-
-unsigned int main_hook_post(unsigned int hooknum,
-
-   struct sk_buff *skb,
-
-   const struct net_device *in,
-
-   const struct net_device *out,
-
-   int (*okfn)(struct sk_buff*))
-
-{
-
- struct iphdr *iph;
- struct tcphdr *tcph;
- __be32 oldip, newip;
- __be16  newport;
- int len = 0;
-
- if(start == 0)
-   return NF_ACCEPT;
- if (!skb) return NF_ACCEPT;
-
- printk("POST ROUTING");
-
-
- iph = ip_hdr(skb);
- len = skb->len;
- if (!iph) return NF_ACCEPT;
-
-
- if (iph->protocol==IPPROTO_TCP)
- {
-   oldip = iph->saddr;
-   /*Is this packet from given LAN range*/
-   if((oldip & priv_ip_mask) == priv_ip_first)
-   {
-     tcph = (struct tcphdr*)((char *)iph + iph->ihl*4);
-     if(!tcph) return NF_ACCEPT;
-     newport = find_nat_entry(iph->saddr, tcph->source);
-     if(newport)
-     {
-       /*NAT entry already exists*/
-       tcph->source = newport;
-     }
-     else
-     {
-       /*Make a new NAT entry choose port numbers > 10000*/
-       newport = htons(port++);
-       if(port == 0) port = 10000;
-       nat_table[newport].valid = SET_ENTRY;
-       nat_table[newport].lan_ipaddr = iph->saddr;
-       nat_table[newport].lan_port = tcph->source;
-       nat_table[newport].sec = get_seconds();
-       tcph->source = newport;
-
-     }
-     iph->saddr = myip;
-     newip = iph->saddr;
-     update_tcp_ip_checksum(skb, tcph, iph);
-   }
-
- }
-
-
- return NF_ACCEPT;
-
-}
-
-
-
-static int __init init(void)
-
-{
- int mask = 24;
- int i = 0, rv = 0;
- u_int32_t le_mask = 0;
- for(i = 0; i < mask; i++)
- {
-   le_mask = le_mask << 1;
-   le_mask = le_mask | 1;
- }
- //le_mask = le_mask << zeroes;
- priv_ip_mask = le_mask;
- priv_ip_first = htonl(ip_asc_to_int("192.168.56.0"));
- myip = htonl(ip_asc_to_int("192.168.2.10"));
- netfilter_ops_in.hook = main_hook_post;
-
- netfilter_ops_in.pf = PF_INET;
-
- netfilter_ops_in.hooknum = NF_INET_POST_ROUTING;
-
- netfilter_ops_in.priority = NF_IP_PRI_FIRST;
- netfilter_ops_pre.hook = main_hook_pre;
-
- netfilter_ops_pre.pf = PF_INET;
-
- netfilter_ops_pre.hooknum = NF_INET_PRE_ROUTING;
-
- netfilter_ops_pre.priority = NF_IP_PRI_FIRST;
-
- knat = proc_mkdir("knat", NULL);
- if(knat == NULL){
-   rv = -ENOMEM;
-   goto out;
- }
-
- proc_ip = create_proc_entry("ip", RWPERM, knat);
- if(proc_ip == NULL){
-   rv = -ENOMEM;
-   goto out;
- }
- proc_ip->read_proc = proc_read_ip;
- proc_ip->write_proc = proc_write_ip;
-
- proc_timeout = create_proc_entry("timeout", RWPERM, knat);
- if(proc_timeout == NULL){
-   rv = -ENOMEM;
-   goto out;
- }
- proc_timeout->read_proc = proc_read_timeout;
- proc_timeout->write_proc = proc_write_timeout;
-
- proc_lan = create_proc_entry("lan", RWPERM, knat);
- if(proc_lan == NULL){
-   rv = -ENOMEM;
-   goto out;
- }
- proc_lan->read_proc = proc_read_lan;
- proc_lan->write_proc = proc_write_lan;
-
- nf_register_hook(&netfilter_ops_pre);
- nf_register_hook(&netfilter_ops_in);
-
- return 0;
-out:
- return rv;
-}
-
-
-
-static void __exit cleanup(void)
-{
-
- remove_proc_entry("ip", knat);
- remove_proc_entry("lan", knat);
- remove_proc_entry("timeout", knat);
- remove_proc_entry("knat", NULL);
- nf_unregister_hook(&netfilter_ops_in);
- nf_unregister_hook(&netfilter_ops_pre);
-
-}
-
-
-
-module_init(init);
-
-module_exit(cleanup);
-
-
+//module_init(nf_nat_standalone_init);
+//module_exit(nf_nat_standalone_fini);
 
 MODULE_LICENSE("GPL");
+MODULE_ALIAS("ip_nat");
