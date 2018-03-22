@@ -168,7 +168,8 @@ nf_nat_in(unsigned int hooknum,
 
 	return ret;
 }
-
+**/
+/**
 static unsigned int
 nf_nat_out(unsigned int hooknum,
 	   struct sk_buff *skb,
@@ -182,7 +183,7 @@ nf_nat_out(unsigned int hooknum,
 #endif
 	unsigned int ret;
 
-	/* root is playing with raw sockets. */
+	// root is playing with raw sockets.
 	if (skb->len < sizeof(struct iphdr) ||
 	    ip_hdrlen(skb) < sizeof(struct iphdr))
 		return NF_ACCEPT;
@@ -215,7 +216,7 @@ nf_nat_local_fn(unsigned int hooknum,
 	enum ip_conntrack_info ctinfo;
 	unsigned int ret;
 
-	/* root is playing with raw sockets. */
+	// root is playing with raw sockets.
 	if (skb->len < sizeof(struct iphdr) ||
 	    ip_hdrlen(skb) < sizeof(struct iphdr))
 		return NF_ACCEPT;
@@ -240,10 +241,10 @@ nf_nat_local_fn(unsigned int hooknum,
 	return ret;
 }
 
-/* We must be after connection tracking and before packet filtering. */
+// We must be after connection tracking and before packet filtering.
 
 static struct nf_hook_ops nf_nat_ops[] __read_mostly = {
-	/* Before packet filtering, change destination */
+	// Before packet filtering, change destination
 	{
 		.hook		= nf_nat_in,
 		.owner		= THIS_MODULE,
@@ -251,7 +252,7 @@ static struct nf_hook_ops nf_nat_ops[] __read_mostly = {
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	// After packet filtering, change source
 	{
 		.hook		= nf_nat_out,
 		.owner		= THIS_MODULE,
@@ -259,7 +260,7 @@ static struct nf_hook_ops nf_nat_ops[] __read_mostly = {
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP_PRI_NAT_SRC,
 	},
-	/* Before packet filtering, change destination */
+	// Before packet filtering, change destination
 	{
 		.hook		= nf_nat_local_fn,
 		.owner		= THIS_MODULE,
@@ -267,7 +268,7 @@ static struct nf_hook_ops nf_nat_ops[] __read_mostly = {
 		.hooknum	= NF_INET_LOCAL_OUT,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
-	/* After packet filtering, change source */
+	// After packet filtering, change source
 	{
 		.hook		= nf_nat_fn,
 		.owner		= THIS_MODULE,
@@ -317,7 +318,7 @@ static void __exit nf_nat_standalone_fini(void)
 	rcu_assign_pointer(ip_nat_decode_session, NULL);
 	synchronize_net();
 #endif
-	/* Conntrack caches are unregistered in nf_conntrack_cleanup */
+	// Conntrack caches are unregistered in nf_conntrack_cleanup
 }
 **/
 
