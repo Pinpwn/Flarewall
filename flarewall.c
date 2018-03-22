@@ -15,7 +15,7 @@
 
 #include "fw_helper.c"
 //#include "ip_nat_standalone.c"
-#include "nf_nat_standalone.c"
+#include "nf_helper.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL");
@@ -61,6 +61,21 @@ unsigned int hook_func_in(unsigned int hooknum,
         struct fw_rule *a_rule;
         int i=0;
         unsigned char *prot;
+
+        //code ported from nf_nat_in
+        unsigned int ret;
+      	__be32 daddr = ip_hdr(skb)->daddr;
+
+      	ret = nf_nat_fn(hooknum, skb, in, out, okfn);
+      	if (ret != NF_DROP && ret != NF_STOLEN &&
+      	    daddr != ip_hdr(skb)->daddr)
+      		skb_dst_drop(skb);
+
+      	//return ret;
+        if(ret==NF_DROP)
+          return ret;
+        //END OF PORTED CODE
+
 	switch(ip_header->protocol)
 			{
 			case 1:
@@ -203,6 +218,39 @@ unsigned int hook_func_out(unsigned int hooknum,
 	//swap_intfc(skb->dev, out);
   //swap_intfc(&skb->dev, &out)
 
+  //start of function imported from nf_nat_out
+  #ifdef CONFIG_XFRM
+  	const struct nf_conn *ct;
+  	enum ip_conntrack_info ctinfo;
+  #endif
+  unsigned int ret;
+
+  /* root is playing with raw sockets. */
+	if (skb->len < sizeof(struct iphdr) ||
+	    ip_hdrlen(skb) < sizeof(struct iphdr))
+		return NF_ACCEPT;
+
+	ret = nf_nat_fn(hooknum, skb, in, out, okfn);
+
+  #ifdef CONFIG_XFRM
+  	if (ret != NF_DROP && ret != NF_STOLEN &&
+  	    (ct = nf_ct_get(skb, &ctinfo)) != NULL) {
+  		enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+
+  		if (ct->tuplehash[dir].tuple.src.u3.ip !=
+  		    ct->tuplehash[!dir].tuple.dst.u3.ip
+  		    || ct->tuplehash[dir].tuple.src.u.all !=
+  		       ct->tuplehash[!dir].tuple.dst.u.all
+  		    )
+  			return ip_xfrm_me_harder(skb) == 0 ? ret : NF_DROP;
+  	}
+  #endif
+
+  if(ret==NF_DROP)
+    return ret;
+  //END OF PORTED CODE
+
+
   printk(KERN_INFO "skb->dev->name:%s && out->name:%s\n", skb->dev->name, out->name);
 
 	switch(ip_header->protocol)
@@ -309,7 +357,7 @@ unsigned int hook_func_out(unsigned int hooknum,
 int init_module()
         {
         //- start of nat_standalone integration
-        nf_nat_standalone_init();
+        //nf_nat_standalone_init();
 
 	      printk(KERN_INFO "Kernel module Flarewall Loaded.\n");
         INIT_LIST_HEAD(&(policy_list.list));
@@ -328,14 +376,14 @@ int init_module()
         nfho.hook = hook_func_in;
         nfho.hooknum = NF_INET_PRE_ROUTING;
         nfho.pf = PF_INET;
-        nfho.priority = NF_IP_PRI_FIRST;
+        nfho.priority = NF_IP_PRI_NAT_DST; // changed from IP_PRE_FIRST to include nf_nat_in code
         nf_register_hook(&nfho);         // Register the hook
 
         /* Fill in the hook structure for outgoing packet hook*/
         nfho_out.hook = hook_func_out;
         nfho_out.hooknum = NF_INET_POST_ROUTING;
         nfho_out.pf = PF_INET;
-        nfho_out.priority = NF_IP_PRI_FIRST;
+        nfho_out.priority = NF_IP_PRI_NAT_SRC; // same as above
         nf_register_hook(&nfho_out);    // Register the hook
 
 	//For testing purpose
@@ -347,7 +395,7 @@ int init_module()
 void cleanup_module()
         {
         //- start of nat_standalone integration
-        nf_nat_standalone_fini();
+        //nf_nat_standalone_fini();
 
 	      struct list_head *p, *q;
         struct fw_rule *a_rule;
