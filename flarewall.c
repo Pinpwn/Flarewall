@@ -15,7 +15,7 @@
 
 #include "fw_helper.c"
 //#include "ip_nat_standalone.c"
-#include "nf_helper.c"
+#include "nat_helper.c"
 
 /****************************************************/
 MODULE_LICENSE("GPL");
