@@ -21,6 +21,7 @@
 #include <linux/netfilter_ipv4/ip_tables.h>
 
 //alloc_null_binding(struct nf_conn *ct, unsigned int hooknum);
+alloc_null_binding(struct nf_conn *ct, unsigned int hooknum);
 
 #ifdef CONFIG_XFRM
 static void nat_decode_session(struct sk_buff *skb, struct flowi *fl)
