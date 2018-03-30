@@ -18,7 +18,7 @@
 #include "nat_helper.c"
 
 /****************************************************/
-//ODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL");
 
 MODULE_DESCRIPTION("Flarewall");
 
@@ -425,5 +425,3 @@ void cleanup_module()
   EXPORT_SYMBOL_GPL(nf_nat_packet);
   EXPORT_SYMBOL_GPL(nf_conntrack_untracked);
 **/
-
-MODULE_LICENSE("GPL");
