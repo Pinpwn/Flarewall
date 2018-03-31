@@ -12,6 +12,8 @@
 #include <asm/uaccess.h>
 #include <linux/netdevice.h>
 
+#include <net/netfilter/nf_nat_core.h>
+
 
 #include "fw_helper.c"
 //#include "ip_nat_standalone.c"
