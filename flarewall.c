@@ -359,7 +359,8 @@ unsigned int hook_func_out(unsigned int hooknum,
 int init_module()
         {
         //- start of nat_standalone integration
-        //nf_nat_standalone_init();
+        //nf_nat_standalone.case
+        need_ipv4_conntrack();
 
 	      printk(KERN_INFO "Kernel module Flarewall Loaded.\n");
         INIT_LIST_HEAD(&(policy_list.list));
