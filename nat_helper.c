@@ -38,6 +38,7 @@ alloc_null_binding(struct nf_conn *ct, unsigned int hooknum)
 	pr_debug("Allocating NULL binding for %p (%pI4)\n", ct, &ip);
 	return nf_nat_setup_info(ct, &range, HOOK2MANIP(hooknum));
 }
+long long dynamic_debug_enabled2;
 
 #ifdef CONFIG_XFRM
 static void nat_decode_session(struct sk_buff *skb, struct flowi *fl)
