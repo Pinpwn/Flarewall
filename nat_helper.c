@@ -20,8 +20,24 @@
 #include <net/netfilter/nf_nat_helper.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 
-//alloc_null_binding(struct nf_conn *ct, unsigned int hooknum);
-unsigned int alloc_null_binding(struct nf_conn *ct, unsigned int hooknum);
+//alloc_null_binding not found in nf_nat_rule.h. Manually declared procedure.
+unsigned int
+alloc_null_binding(struct nf_conn *ct, unsigned int hooknum)
+{
+	/* Force range to this IP; let proto decide mapping for
+	   per-proto parts (hence not IP_NAT_RANGE_PROTO_SPECIFIED).
+	   Use reply in case it's already been mangled (eg local packet).
+	*/
+	__be32 ip
+		= (HOOK2MANIP(hooknum) == IP_NAT_MANIP_SRC
+		   ? ct->tuplehash[IP_CT_DIR_REPLY].tuple.dst.u3.ip
+		   : ct->tuplehash[IP_CT_DIR_REPLY].tuple.src.u3.ip);
+	struct nf_nat_range range
+		= { IP_NAT_RANGE_MAP_IPS, ip, ip, { 0 }, { 0 } };
+
+	pr_debug("Allocating NULL binding for %p (%pI4)\n", ct, &ip);
+	return nf_nat_setup_info(ct, &range, HOOK2MANIP(hooknum));
+}
 
 #ifdef CONFIG_XFRM
 static void nat_decode_session(struct sk_buff *skb, struct flowi *fl)
